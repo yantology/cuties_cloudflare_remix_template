@@ -1,79 +1,80 @@
-/**
- * This is intended to be a basic starting point for linting in your app.
- * It relies on recommended configs out of the box for simplicity, but you can
- * and should modify this configuration to best suit your team's needs.
- */
-
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
   root: true,
+  parser: "@typescript-eslint/parser", 
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
     ecmaFeatures: {
       jsx: true,
     },
+    project: true // Diperlukan oleh beberapa aturan TypeScript
   },
   env: {
     browser: true,
     commonjs: true,
     es6: true,
   },
-  ignorePatterns: ["!**/.server", "!**/.client"],
+  ignorePatterns: ["!**/.server", "!**/.client"], // Sesuaikan jika perlu
 
-  // Base config
-  extends: ["eslint:recommended"],
-
+  // Mengambil konfigurasi dasar dari Remix
+  extends: [
+    "@remix-run/eslint-config",
+    "@remix-run/eslint-config/node",
+    "prettier", 
+    "plugin:tailwindcss/recommended" 
+  ],
+  plugins: [
+    "react", 
+    "jsx-a11y", 
+    "@typescript-eslint", 
+    "import", 
+    "prettier" 
+  ],
+  settings: {
+    react: {
+      version: "detect", 
+    },
+    formComponents: ["Form"],
+    linkComponents: [
+      { name: "Link", linkAttribute: "to" },
+      { name: "NavLink", linkAttribute: "to" },
+    ],
+    "import/resolver": {
+      typescript: {},
+      node: { // Tambahkan resolver Node.js
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
+      },
+    },
+  },
+  rules: {
+    // Aturan dari file ESLint 2
+    "import/consistent-type-specifier-style": ["warn", "prefer-inline"],
+    "import/no-duplicates": ["warn", { "prefer-inline": true }],
+    "require-await": ["warn"],
+    "no-empty-pattern": "off",
+    "node/no-process-env": "warn",
+    "react/self-closing-comp": ["warn", { component: true, html: true }],
+    "@typescript-eslint/array-type": "off",
+    "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-misused-promises": [2, { checksVoidReturn: { attributes: false } }],
+    "@typescript-eslint/consistent-type-imports": [
+      "warn",
+      {
+        prefer: "type-imports",
+        fixStyle: "inline-type-imports",
+        disallowTypeAnnotations: true,
+      },
+    ],
+    
+    // Aturan tambahan (bisa dari file ESLint 1 atau kustom)
+    "prettier/prettier": "error",  // Pastikan error Prettier ditampilkan
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }], 
+    "react-hooks/exhaustive-deps": "warn" // Contoh aturan tambahan
+  },
   overrides: [
-    // React
-    {
-      files: ["**/*.{js,jsx,ts,tsx}"],
-      plugins: ["react", "jsx-a11y"],
-      extends: [
-        "plugin:react/recommended",
-        "plugin:react/jsx-runtime",
-        "plugin:react-hooks/recommended",
-        "plugin:jsx-a11y/recommended",
-      ],
-      settings: {
-        react: {
-          version: "detect",
-        },
-        formComponents: ["Form"],
-        linkComponents: [
-          { name: "Link", linkAttribute: "to" },
-          { name: "NavLink", linkAttribute: "to" },
-        ],
-        "import/resolver": {
-          typescript: {},
-        },
-      },
-    },
-
-    // Typescript
-    {
-      files: ["**/*.{ts,tsx}"],
-      plugins: ["@typescript-eslint", "import"],
-      parser: "@typescript-eslint/parser",
-      settings: {
-        "import/internal-regex": "^~/",
-        "import/resolver": {
-          node: {
-            extensions: [".ts", ".tsx"],
-          },
-          typescript: {
-            alwaysTryTypes: true,
-          },
-        },
-      },
-      extends: [
-        "plugin:@typescript-eslint/recommended",
-        "plugin:import/recommended",
-        "plugin:import/typescript",
-      ],
-    },
-
-    // Node
+    // Konfigurasi spesifik Node.js (dari file ESLint 1)
     {
       files: [".eslintrc.cjs"],
       env: {
